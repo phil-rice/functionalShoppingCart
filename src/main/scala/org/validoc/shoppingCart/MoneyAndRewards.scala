@@ -1,5 +1,11 @@
 package org.validoc.shoppingCart
 
+//A tiny type for money. Representing money is hard, so this encapsulates all uses of money
+//These could be made AnyVals, but that makes the testing harder: Mockito doesn't understand AnyVals
+case class Money(amount: Int)
+
+case class Reward(points: Int)
+
 //Both Money and Reward are naturally Monoids. By making this a type class
 //I can control the usage of arithmetic on them, and make it really easy to change their representation
 //In money's case that is very likely!
@@ -56,9 +62,3 @@ object Monoid {
   }
 
 }
-
-//A tiny type for money. Representing money is hard, so this encapsulates all uses of money
-//These could be made AnyVals, but that makes the testing harder: Mockito doesn't understand AnyVals
-case class Money(amount: Int)
-
-case class Reward(points: Int)

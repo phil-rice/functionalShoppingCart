@@ -7,9 +7,9 @@ class ShoppingCartDetailsSpec extends ShoppingCartSpec with ShoppingCartFixture 
 
   behavior of "ShoppingCardDetails"
 
-  it should "turn ids into skus" in {
+  it should "turn have ids " in {
     setupDetails { (details, compositeOffer) =>
-      details.fullItems shouldBe Seq(appleSku, orangeSku)
+      details.ids shouldBe ids
     }
   }
 

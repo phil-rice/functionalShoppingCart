@@ -32,18 +32,19 @@ class RewardCalculatorSpec extends ShoppingCartSpec with ShoppingCartFixture {
 
   behavior of "RewardCalculator"
 
-  def setup(fn: (BaseRewardCalculator, BonusRewardCalculator) => Unit): Unit = {
+  def setup(fn: BaseRewardCalculator => BonusRewardCalculator => Unit): Unit = {
     val baseRewardCalculator = mock[BaseRewardCalculator]
     val bonusRewardCalculator = mock[BonusRewardCalculator]
-    fn(baseRewardCalculator, bonusRewardCalculator)
+    fn(baseRewardCalculator)(bonusRewardCalculator)
   }
 
   it should "return the base reward calculator and any doubles" in {
     setupDetails { (details, _) =>
-      setup { (base, bonus) =>
-        when(base.apply(details.price)) thenReturn Reward(111)
-        when(bonus.apply(details.ids)) thenReturn Reward(222)
-        RewardCalculator(base, bonus)(details) shouldBe Reward(333)
+      setup { implicit base =>
+        implicit bonus =>
+          when(base.apply(details.price)) thenReturn Reward(111)
+          when(bonus.apply(details.ids)) thenReturn Reward(222)
+          RewardCalculator(details) shouldBe Reward(333)
       }
     }
   }

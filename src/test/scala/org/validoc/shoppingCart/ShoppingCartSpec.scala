@@ -12,7 +12,7 @@ trait ShoppingCartFixture extends MockitoSugar {
   val appleSku = Sku(apple, Description("Delicious Juicy Apples"), Money(30))
 
   val orange = Id("orange")
-  val orangeSku = Sku(apple, Description("Over the top Orangy Goodness"), Money(40))
+  val orangeSku = Sku(orange, Description("Over the top Orangy Goodness"), Money(40))
 
   implicit val skus = Map(apple -> appleSku, orange -> orangeSku)
 

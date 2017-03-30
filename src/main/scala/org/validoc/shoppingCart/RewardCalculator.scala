@@ -2,8 +2,10 @@ package org.validoc.shoppingCart
 
 import Monoid._
 
+//I'm using implicits as a dependency injection mechanism.
+// This is obviously a project specific choice
 trait RewardCalculator {
-  def apply(baseRewardCalculator: BaseRewardCalculator, bonusRewardCalculator: BonusRewardCalculator)(details: ShoppingCartDetails): Reward =
+  def apply(details: ShoppingCartDetails)(implicit baseRewardCalculator: BaseRewardCalculator, bonusRewardCalculator: BonusRewardCalculator): Reward =
     baseRewardCalculator(details.price) + bonusRewardCalculator(details.ids)
 }
 
