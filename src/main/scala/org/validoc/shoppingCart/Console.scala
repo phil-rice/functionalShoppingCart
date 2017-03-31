@@ -2,6 +2,7 @@ package org.validoc.shoppingCart
 
 import scala.annotation.tailrec
 import org.validoc.shoppingCart.utilities.FunctionalLanguage._
+
 trait MessageUser {
   def apply(s: Any): Unit
 }
@@ -16,16 +17,16 @@ object Commands {
   //There is a tempation to do this using the command pattern and having one command per object. I think this is more readable at the moment, although
   //for production code I would split them out
   def command(command: Char, details: ShoppingCart)(implicit skus: Map[Id, Sku], compositeOffer: CompositeOffer, messageUser: MessageUser): ShoppingCart =
-    (command, details) match {
-      case ('0', _) => ShoppingCart(Seq())
-      case ('q', details) => {
-        messageUser("thank you for shopping")
-        System.exit(0)
-        details
-      }
-      case (command, details) if (skus.contains(command: Id)) => details + command
-      case cmd => messageUser(s"Command ['$cmd'] not understood. Pressing q will exit"); details
+  (command, details) match {
+    case ('0', _) => Seq()
+    case ('q', details) => {
+      messageUser("thank you for shopping")
+      System.exit(0)
+      details
     }
+    case (command, details) if (skus.contains(command: Id)) => details + command
+    case cmd => messageUser(s"Command ['$cmd'] not understood. Pressing q will exit"); details
+  }
 
 }
 
@@ -55,13 +56,15 @@ object ConsoleApp extends App {
   messageUser("Usage: Press letters a,b,c,d to buy an apple, bacon, carrots or donuts. Press q to exit")
 
   @tailrec
-  def processCommand(details: ShoppingCart = ShoppingCart(Seq())): Unit = {
+  def processCommand(cart: ShoppingCart = Seq()): Unit = {
     val ch = Console.in.read.toChar
-    val nextDetails = command(ch, details)
-    nextDetails.prettyPrint
-    messageUser(RewardCalculator(nextDetails))
+    val nextCart = command(ch, cart)
+    val discounts = implicitly[CompositeOffer] apply nextCart
+    val details = ShoppingCartResult(nextCart.fmap(implicitly[Map[Id, Sku]]), discounts)
+    details.prettyPrint
+    messageUser(RewardCalculator(details))
     messageUser("")
-    processCommand(nextDetails)
+    processCommand(nextCart)
   }
 
   processCommand()

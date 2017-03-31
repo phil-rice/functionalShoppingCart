@@ -22,10 +22,9 @@ trait ShoppingCartFixture extends MockitoSugar {
   val foundDiscounts = Seq(discount("one"), discount("two"))
   val ids = Seq(apple, orange)
 
-  def setupDetails(fn: (ShoppingCart, CompositeOffer) => Unit) = {
+  def setupDetails(fn: ShoppingCart => CompositeOffer => Unit) = {
     implicit val compositeOffer = mock[CompositeOffer]
     when(compositeOffer.apply(ids)) thenReturn foundDiscounts
-    val shoppingCartDetails = ShoppingCart(ids)
-    fn(shoppingCartDetails, compositeOffer)
+    fn(ids)(compositeOffer)
   }
 }

@@ -44,7 +44,7 @@ abstract class AbstractMonoidTest[T: ClassTag : Monoid] extends Spec {
 
 }
 
-abstract class AbstractGroupTest[T: Group: ClassTag] extends AbstractMonoidTest[T] {
+abstract class AbstractGroupTest[T: Group : ClassTag] extends AbstractMonoidTest[T] {
 
   it should "implement subtract" in {
     two - zero shouldBe two
@@ -88,4 +88,14 @@ class CompositeOfferTest extends AbstractMonoidTest[CompositeOffer] {
   override def four: CompositeOffer = CompositeOffer(Seq(o1, o2, o1, o2))
 
   override def six: CompositeOffer = CompositeOffer(Seq(o1, o2, o1, o2, o1, o2))
+}
+
+class SeqTest extends AbstractMonoidTest[Seq[String]] {
+  override def zero: Seq[String] = Seq()
+
+  override def two: Seq[String] = Seq("1", "2")
+
+  override def four: Seq[String] = Seq("1", "2", "1", "2")
+
+  override def six: Seq[String] = Seq("1", "2", "1", "2", "1", "2")
 }

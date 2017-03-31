@@ -6,8 +6,8 @@ import org.validoc.shoppingCart.utilities.FunctionalLanguage._
 //I'm using implicits as a dependency injection mechanism.
 // This is obviously a project specific choice
 trait RewardCalculator {
-  def apply(details: ShoppingCart)(implicit baseRewardCalculator: BaseRewardCalculator, bonusRewardCalculator: BonusRewardCalculator): Reward =
-    baseRewardCalculator(details.price) + bonusRewardCalculator(details.ids)
+  def apply(result: ShoppingCartResult)(implicit baseRewardCalculator: BaseRewardCalculator, bonusRewardCalculator: BonusRewardCalculator): Reward =
+    baseRewardCalculator(result.price) + bonusRewardCalculator(result.ids)
 }
 
 object RewardCalculator extends RewardCalculator
