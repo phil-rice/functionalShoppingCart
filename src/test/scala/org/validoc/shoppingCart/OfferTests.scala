@@ -3,7 +3,7 @@ package org.validoc.shoppingCart
 import org.scalatest.mockito.MockitoSugar
 
 
-class BuyNForYTests extends ShoppingCartSpec with ShoppingCartFixture {
+class BuyNForYTests extends Spec with ShoppingCartFixture {
 
   behavior of "Buy 2 apples for 50"
 
@@ -36,7 +36,7 @@ class BuyNForYTests extends ShoppingCartSpec with ShoppingCartFixture {
 }
 
 
-class CompositeOfferTests extends ShoppingCartSpec with ShoppingCartFixture {
+class CompositeOfferTests extends Spec with ShoppingCartFixture {
 
   import org.mockito.Mockito._
 

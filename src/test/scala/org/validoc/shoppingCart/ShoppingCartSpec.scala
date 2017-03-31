@@ -1,31 +1,41 @@
 package org.validoc.shoppingCart
 
-import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{FlatSpec, Matchers}
+import org.mockito.Mockito._
+import org.validoc.shoppingCart.utilities.FunctionalLanguage._
 
-trait ShoppingCartSpec extends FlatSpec with Matchers with MockitoSugar
+class ShoppingCartSpec extends Spec with ShoppingCartFixture {
 
-trait ShoppingCartFixture extends MockitoSugar {
+  behavior of "ShoppingCardDetails"
 
-  val apple = Id("apple")
-  val appleSku = Sku(apple, Description("Delicious Juicy Apples"), Money(30))
+  it should "turn have ids " in {
+    setupDetails { (details, compositeOffer) =>
+      details.ids shouldBe ids
+    }
+  }
 
-  val orange = Id("orange")
-  val orangeSku = Sku(orange, Description("Over the top Orangy Goodness"), Money(40))
+  it should "calculate the originalPrice price as the sum of the sku items" in {
+    setupDetails { (details, compositeOffer) =>
+      details.originalPrice shouldBe appleSku.price + orangeSku.price
+      details.originalPrice shouldBe Money(70)
+    }
+  }
 
-  implicit val skus = Map(apple -> appleSku, orange -> orangeSku)
+  it should "have the discounts as those returned by the composite offer" in {
+    setupDetails { (details, compositeOffer) =>
+      details.discounts shouldBe foundDiscounts
+    }
+  }
 
-  def discount(description: String) = Discount(Description(description), Money(10))
+  it should "calculate the savings as the sum of the discount prices" in {
+    setupDetails { (details, compositeOffer) =>
+      details.savings shouldBe discount("one").price + discount("two").price
+      details.savings shouldBe Money(20)
+    }
+  }
 
-
-  val foundDiscounts = Seq(discount("one"), discount("two"))
-  val ids = Seq(apple, orange)
-
-  def setupDetails(fn: (ShoppingCartDetails, CompositeOffer) => Unit) = {
-    implicit val compositeOffer = mock[CompositeOffer]
-    when(compositeOffer.apply(ids)) thenReturn foundDiscounts
-    val shoppingCartDetails = ShoppingCartDetails(ids)
-    fn(shoppingCartDetails, compositeOffer)
+  it should "calculate the price " in {
+    setupDetails { (details, compositeOffer) =>
+      details.price shouldBe Money(50)
+    }
   }
 }

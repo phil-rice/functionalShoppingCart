@@ -2,7 +2,7 @@ package org.validoc.shoppingCart
 
 import org.mockito.Mockito._
 
-class BaseRewardCalculatorSpec extends ShoppingCartSpec {
+class BaseRewardCalculatorSpec extends Spec {
   behavior of "BaseRewardCalculator"
 
   it should "return the rewards as 1/100 of the money" in {
@@ -14,21 +14,21 @@ class BaseRewardCalculatorSpec extends ShoppingCartSpec {
 
 }
 
-class DoublePointsForSpec extends ShoppingCartSpec with ShoppingCartFixture {
+class DoublePointsForSpec extends Spec with ShoppingCartFixture {
 
   behavior of "DoublePointsFor"
 
   it should "add up the price of the skus in the shopping basket that match the id and return the base reward calculator's result for that price" in {
-    val baseRewardCalculator = mock[BaseRewardCalculator]
+    implicit val baseRewardCalculator = mock[BaseRewardCalculator]
     when(baseRewardCalculator.apply(Money(30))) thenReturn Reward(111)
     when(baseRewardCalculator.apply(Money(60))) thenReturn Reward(222)
-    val pointsFor = new DoublePointsFor(appleSku, baseRewardCalculator)
+    val pointsFor = new DoublePointsFor(appleSku)
     pointsFor(Seq(apple, orange)) shouldBe Reward(111)
     pointsFor(Seq(apple, apple, orange)) shouldBe Reward(222)
   }
 }
 
-class RewardCalculatorSpec extends ShoppingCartSpec with ShoppingCartFixture {
+class RewardCalculatorSpec extends Spec with ShoppingCartFixture {
 
   behavior of "RewardCalculator"
 

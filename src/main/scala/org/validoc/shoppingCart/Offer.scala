@@ -1,8 +1,11 @@
 package org.validoc.shoppingCart
 
-import Monoid._
+import org.validoc.shoppingCart.utilities.FunctionalLanguage._
+import org.validoc.shoppingCart.utilities.Monoid
 
 
+//Like actual supermarkets, offers are 'a discount'
+//So you get charged the full price and then there is a discount for the amount you save
 trait Offer extends (Seq[Id] => Seq[Discount])
 
 object Offer {
@@ -16,8 +19,19 @@ trait SingleSkuOffer extends Offer {
 object NullOffer extends Offer {
   override def apply(v1: Seq[Id]): Seq[Discount] = Seq()
 }
+
 case class CompositeOffer(offers: Seq[Offer]) extends Offer {
   override def apply(ids: Seq[Id]): Seq[Discount] = offers.flatMap(_ apply ids)
+}
+
+object CompositeOffer {
+
+  implicit object MonoidForCompositeOffer extends Monoid[CompositeOffer] {
+    override def zero: CompositeOffer = CompositeOffer(Seq())
+
+    override def add(t: CompositeOffer, other: CompositeOffer): CompositeOffer = CompositeOffer(t.offers ++ other.offers)
+  }
+
 }
 
 case class BuyNForY(sku: Sku, n: Int, price: Money) extends SingleSkuOffer {

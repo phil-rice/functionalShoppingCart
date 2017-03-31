@@ -1,10 +1,11 @@
 package org.validoc.shoppingCart
 
+import org.validoc.shoppingCart.utilities.{Group, Monoid}
+import org.validoc.shoppingCart.utilities.FunctionalLanguage._
+
 import scala.reflect.ClassTag
 
-import Monoid._
-
-abstract class AbstractMonoidTest[T: ClassTag : Monoid] extends ShoppingCartSpec {
+abstract class AbstractMonoidTest[T: ClassTag : Monoid] extends Spec {
 
   val monoid = implicitly[Monoid[T]]
 
@@ -41,6 +42,10 @@ abstract class AbstractMonoidTest[T: ClassTag : Monoid] extends ShoppingCartSpec
     two * 3 shouldBe six
   }
 
+}
+
+abstract class AbstractGroupTest[T: Group: ClassTag] extends AbstractMonoidTest[T] {
+
   it should "implement subtract" in {
     two - zero shouldBe two
     four - two shouldBe two
@@ -48,7 +53,7 @@ abstract class AbstractMonoidTest[T: ClassTag : Monoid] extends ShoppingCartSpec
   }
 }
 
-class MoneyTest extends AbstractMonoidTest[Money] {
+class MoneyTest extends AbstractGroupTest[Money] {
   override def zero: Money = Money(0)
 
   override def two: Money = Money(2)
@@ -58,7 +63,7 @@ class MoneyTest extends AbstractMonoidTest[Money] {
   override def six: Money = Money(6)
 }
 
-class RewardTest extends AbstractMonoidTest[Reward] {
+class RewardTest extends AbstractGroupTest[Reward] {
   override def zero: Reward = Reward(0)
 
   override def two: Reward = Reward(2)
@@ -66,4 +71,21 @@ class RewardTest extends AbstractMonoidTest[Reward] {
   override def four: Reward = Reward(4)
 
   override def six: Reward = Reward(6)
+}
+
+class CompositeOfferTest extends AbstractMonoidTest[CompositeOffer] {
+  val o1 = mock[Offer]
+  val o2 = mock[Offer]
+  val o3 = mock[Offer]
+  val o4 = mock[Offer]
+  val o5 = mock[Offer]
+  val o6 = mock[Offer]
+
+  override def zero: CompositeOffer = CompositeOffer(Seq())
+
+  override def two: CompositeOffer = CompositeOffer(Seq(o1, o2))
+
+  override def four: CompositeOffer = CompositeOffer(Seq(o1, o2, o1, o2))
+
+  override def six: CompositeOffer = CompositeOffer(Seq(o1, o2, o1, o2, o1, o2))
 }
