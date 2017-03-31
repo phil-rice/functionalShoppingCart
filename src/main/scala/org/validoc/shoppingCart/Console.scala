@@ -43,9 +43,8 @@ object ConsoleApp extends App {
   val skuList = List[Sku](apple, bacon, carrots, donuts)
 
   implicit val skus = skuList.foldLeft(Map[Id, Sku]())((acc, sku) => acc + (sku.id -> sku))
-  implicit val offers = Offer(BuyNForY(apple, 2, Money(45)))
-  implicit val baseRewardCalculator = BaseRewardCalculator
-  implicit val bonusRewardCalculator = new DoublePointsFor(apple)
+  implicit val offers = CompositeOffer(Seq(BuyNForY(apple, 2, Money(45))))
+  implicit val bonusRewardCalculator = new DoublePointsFor(bacon)
   implicit val messageUser = MessageUserByPrintln
 
   import sys.process._

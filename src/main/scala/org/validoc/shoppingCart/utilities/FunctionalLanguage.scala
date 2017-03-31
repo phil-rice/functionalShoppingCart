@@ -12,19 +12,80 @@ trait Monoid[T] {
 }
 
 
+object Monoid {
+
+  implicit object MonoidForInt extends Monoid[Int] {
+    override def zero: Int = 0
+
+    override def add(t: Int, other: Int): Int = t + other
+  }
+
+  implicit def seqAsMonoid[T] = new Monoid[Seq[T]] {
+    override def zero: Seq[T] = Seq()
+
+    override def add(t: Seq[T], other: Seq[T]): Seq[T] = t ++ other
+  }
+
+
+}
+
+class MonoidFor[M, T: Monoid](fn: T => M, coFn: M => T) extends Monoid[M] {
+  val monoidT = implicitly[Monoid[T]]
+
+  override def zero: M = fn(monoidT.zero)
+
+  override def add(t: M, other: M): M = fn(monoidT.add(coFn(t), coFn(other)))
+
+}
+
 trait Group[T] extends Monoid[T] {
-  def inverse(t: T) = t
+  def inverse(t: T): T
 
   def subtract(t: T, other: T): T = add(t, inverse(other))
+
+}
+
+object Group {
+
+  implicit object GroupForInt extends Group[Int] {
+    override def inverse(t: Int): Int = -t
+
+    override def zero: Int = 0
+
+    override def add(t: Int, other: Int): Int = t + other
+  }
+
+}
+
+class GroupFor[M, T: Group](fn: T => M, coFn: M => T) extends MonoidFor[M, T](fn, coFn) with Group[M] {
+  val groupT = implicitly[Group[T]]
+
+  override def inverse(t: M) = fn(groupT.inverse(coFn(t)))
 }
 
 trait Functor[M[_]] {
   def fmap[A, B](m: M[A], fn: A => B): M[B]
 }
 
+object Functor {
+  implicit val seqAsFunctor = SeqAsSequence
+}
+
 trait Sequence[M[_]] extends Functor[M] {
   def +[T](m: M[T], t: T): M[T]
 }
+
+object SeqAsSequence extends Sequence[Seq] {
+
+  override def +[T](m: Seq[T], t: T): Seq[T] = m ++ Seq(t)
+
+  override def fmap[A, B](m: Seq[A], fn: (A) => B): Seq[B] = m.map(fn)
+}
+
+object Sequence {
+  implicit val seqSequence = SeqAsSequence
+}
+
 
 trait Monad[M[_]] extends Functor[M] {
   def lift[T](t: T): M[T]
@@ -32,25 +93,19 @@ trait Monad[M[_]] extends Functor[M] {
   def flatMap[A, B](m: M[A], fn: A => M[B]): M[B]
 }
 
+object Monad {
 
-object FunctionalLanguage {
-
-  implicit object SeqAsMonadAndSequence extends Monad[Seq] with Sequence[Seq] {
+  implicit object SeqAsMonad extends Monad[Seq] {
     override def lift[T](t: T): Seq[T] = Seq(t)
 
     override def flatMap[A, B](m: Seq[A], fn: (A) => Seq[B]): Seq[B] = m.flatMap(fn)
 
-    override def +[T](m: Seq[T], t: T): Seq[T] = m ++ Seq(t)
-
     override def fmap[A, B](m: Seq[A], fn: (A) => B): Seq[B] = m.map(fn)
   }
 
-  implicit def SeqAsMonoid[T] = new Monoid[Seq[T]] {
-    override def zero: Seq[T] = Seq()
+}
 
-    override def add(t: Seq[T], other: Seq[T]): Seq[T] = t ++ other
-  }
-
+object FunctionalLanguage {
 
   implicit class MonoidPimper[T: Monoid](t: T) {
     val monoid = implicitly[Monoid[T]]
@@ -87,5 +142,6 @@ object FunctionalLanguage {
   implicit class MonadPimper[M[_] : Monad, A](m: M[A]) {
     def flatMap[B](fn: A => M[B]) = implicitly[Monad[M]].flatMap(m, fn)
   }
+
 
 }

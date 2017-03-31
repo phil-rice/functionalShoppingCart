@@ -76,10 +76,6 @@ class RewardTest extends AbstractGroupTest[Reward] {
 class CompositeOfferTest extends AbstractMonoidTest[CompositeOffer] {
   val o1 = mock[Offer]
   val o2 = mock[Offer]
-  val o3 = mock[Offer]
-  val o4 = mock[Offer]
-  val o5 = mock[Offer]
-  val o6 = mock[Offer]
 
   override def zero: CompositeOffer = CompositeOffer(Seq())
 

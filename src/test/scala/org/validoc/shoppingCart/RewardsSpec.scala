@@ -6,10 +6,11 @@ class BaseRewardCalculatorSpec extends Spec {
   behavior of "BaseRewardCalculator"
 
   it should "return the rewards as 1/100 of the money" in {
-    BaseRewardCalculator(Money(0)) shouldBe Reward(0)
-    BaseRewardCalculator(Money(99)) shouldBe Reward(0)
-    BaseRewardCalculator(Money(100)) shouldBe Reward(1)
-    BaseRewardCalculator(Money(900)) shouldBe Reward(9)
+    val baseRewardCalculator = implicitly[BaseRewardCalculator]
+    baseRewardCalculator(Money(0)) shouldBe Reward(0)
+    baseRewardCalculator(Money(99)) shouldBe Reward(0)
+    baseRewardCalculator(Money(100)) shouldBe Reward(1)
+    baseRewardCalculator(Money(900)) shouldBe Reward(9)
   }
 
 }
@@ -38,16 +39,16 @@ class RewardCalculatorSpec extends Spec with ShoppingCartFixture {
     fn(baseRewardCalculator)(bonusRewardCalculator)
   }
 
-//  it should "return the base reward calculator and any doubles" in {
-//    setupDetails { cart =>
-//      offer =>
-//        setup { implicit base =>
-//          implicit bonus =>
-//            val result = ShoppingCartPriceCalculator(cart)
-//            when(base.apply(result.price)) thenReturn Reward(111)
-//            when(bonus.apply(result.items)) thenReturn Reward(222)
-//            RewardCalculator(cart) shouldBe Reward(333)
-//        }
-//    }
-//  }
+  it should "return the base reward calculator and any doubles" in {
+    setupDetails { cart =>
+      implicit offer =>
+        setup { implicit base =>
+          implicit bonus =>
+            val result = ShoppingCartPriceCalculator(cart)
+            when(base.apply(result.price)) thenReturn Reward(111)
+            when(bonus.apply(result.ids)) thenReturn Reward(222)
+            RewardCalculator(result) shouldBe Reward(333)
+        }
+    }
+  }
 }

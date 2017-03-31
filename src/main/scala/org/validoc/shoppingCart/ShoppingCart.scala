@@ -1,32 +1,22 @@
 package org.validoc.shoppingCart
 
-import org.validoc.shoppingCart.utilities.{Functor, Monoid, Sequence}
 import org.validoc.shoppingCart.utilities.FunctionalLanguage._
-
-trait Pricable {
-  def description: Description
-
-  def price: Money
-}
-
 
 case class Id(id: String) extends AnyVal
 
 case class Description(s: String) extends AnyVal
 
-case class Sku(id: Id, description: Description, price: Money) extends Pricable
+case class Sku(id: Id, description: Description, price: Money)
 
-case class Discount(description: Description, price: Money) extends Pricable
+case class Discount(description: Description, price: Money)
 
-//Again implicits as dependancy inject
 
+object ShoppingCartPriceCalculator extends ShoppingCartPriceCalculator
 
 trait ShoppingCartPriceCalculator {
   def apply(cart: ShoppingCart)(implicit skus: Map[Id, Sku], offer: CompositeOffer) =
-    ShoppingCartResult(cart.fmap(skus), offer(cart))
+    ShoppingCartResult(cart.map(skus), offer(cart))
 }
-
-object ShoppingCartPriceCalculator extends  ShoppingCartPriceCalculator
 
 case class ShoppingCartResult(items: Seq[Sku], discounts: Seq[Discount]) {
   val ids = items.map(_.id)

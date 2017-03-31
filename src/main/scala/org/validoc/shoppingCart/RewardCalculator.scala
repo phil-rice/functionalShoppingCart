@@ -16,13 +16,11 @@ trait BaseRewardCalculator extends (Money => Reward) {
   def apply(cost: Money): Reward = Reward(cost.amount / 100)
 }
 
-object BaseRewardCalculator extends BaseRewardCalculator
+object BaseRewardCalculator {
+  implicit object DefaultBaseRewardCalculator extends BaseRewardCalculator
+}
 
 trait BonusRewardCalculator extends (Seq[Id] => Reward)
-
-object NullBonusRewardCalculator extends BonusRewardCalculator {
-  override def apply(id: Seq[Id]): Reward = implicitly[Monoid[Reward]].zero
-}
 
 class DoublePointsFor(sku: Sku)(implicit baseRewardCalculator: BaseRewardCalculator) extends BonusRewardCalculator {
   override def apply(ids: Seq[Id]): Reward = {

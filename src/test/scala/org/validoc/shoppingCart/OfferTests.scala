@@ -10,7 +10,7 @@ class BuyNForYTests extends Spec with ShoppingCartFixture {
   val offer = new BuyNForY(appleSku, 2, Money(50))
 
   it should "have a matching function that filter for the item" in {
-    offer.allMatching(apple)(Seq(orange, apple, apple, orange, orange)) shouldBe Seq(apple, apple)
+    offer.matchingId(Seq(orange, apple, apple, orange, orange)) shouldBe Seq(apple, apple)
   }
 
   it should "produce no discount if there are zero apples " in {
