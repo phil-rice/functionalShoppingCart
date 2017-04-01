@@ -1,7 +1,7 @@
 package org.validoc.shoppingCart
 
 import org.validoc.shoppingCart.utilities.FunctionalLanguage._
-import org.validoc.shoppingCart.utilities.{Monoid, MonoidFor, Sequence}
+import org.validoc.shoppingCart.utilities.MonoidFor
 
 
 //Like actual supermarkets, offers are 'a discount'

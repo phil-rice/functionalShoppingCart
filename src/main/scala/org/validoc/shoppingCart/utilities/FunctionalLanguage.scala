@@ -68,38 +68,8 @@ trait Functor[M[_]] {
 }
 
 object Functor {
-  implicit val seqAsFunctor = SeqAsSequence
-}
 
-trait Sequence[M[_]] extends Functor[M] {
-  def +[T](m: M[T], t: T): M[T]
-}
-
-object SeqAsSequence extends Sequence[Seq] {
-
-  override def +[T](m: Seq[T], t: T): Seq[T] = m ++ Seq(t)
-
-  override def fmap[A, B](m: Seq[A], fn: (A) => B): Seq[B] = m.map(fn)
-}
-
-object Sequence {
-  implicit val seqSequence = SeqAsSequence
-}
-
-
-trait Monad[M[_]] extends Functor[M] {
-  def lift[T](t: T): M[T]
-
-  def flatMap[A, B](m: M[A], fn: A => M[B]): M[B]
-}
-
-object Monad {
-
-  implicit object SeqAsMonad extends Monad[Seq] {
-    override def lift[T](t: T): Seq[T] = Seq(t)
-
-    override def flatMap[A, B](m: Seq[A], fn: (A) => Seq[B]): Seq[B] = m.flatMap(fn)
-
+  implicit object SeqAsFunctor extends Functor[Seq] {
     override def fmap[A, B](m: Seq[A], fn: (A) => B): Seq[B] = m.map(fn)
   }
 
@@ -134,14 +104,5 @@ object FunctionalLanguage {
   implicit class FunctorPimper[M[_] : Functor, A](f: M[A]) {
     def fmap[B](fn: A => B): M[B] = implicitly[Functor[M]].fmap(f, fn)
   }
-
-  implicit class SequencePimper[M[_] : Sequence, T](s: M[T]) {
-    def +(t: T): M[T] = implicitly[Sequence[M]].+(s, t)
-  }
-
-  implicit class MonadPimper[M[_] : Monad, A](m: M[A]) {
-    def flatMap[B](fn: A => M[B]) = implicitly[Monad[M]].flatMap(m, fn)
-  }
-
 
 }

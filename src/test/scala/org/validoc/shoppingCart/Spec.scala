@@ -18,8 +18,8 @@ trait ShoppingCartFixture extends MockitoSugar {
 
   def discount(description: String) = Discount(Description(description), Money(10))
 
-
   val foundDiscounts = Seq(discount("one"), discount("two"))
+
   val ids = Seq(apple, orange)
 
   def setupDetails(fn: ShoppingCart => CompositeOffer => Unit) = {

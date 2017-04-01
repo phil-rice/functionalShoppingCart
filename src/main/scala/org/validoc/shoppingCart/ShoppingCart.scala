@@ -30,3 +30,4 @@ case class ShoppingCartResult(items: Seq[Sku], discounts: Seq[Discount]) {
     println(s"Total: ${price} Savings ${savings}")
   }
 }
+

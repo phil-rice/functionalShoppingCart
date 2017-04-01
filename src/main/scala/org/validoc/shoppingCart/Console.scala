@@ -24,7 +24,7 @@ object Commands {
       System.exit(0)
       details
     }
-    case (command, details) if (skus.contains(command: Id)) => details + command
+    case (command, details) if (skus.contains(command: Id)) => details :+ (command: Id)
     case cmd => messageUser(s"Command ['$cmd'] not understood. Pressing q will exit"); details
   }
 
@@ -58,8 +58,7 @@ object ConsoleApp extends App {
   def processCommand(cart: ShoppingCart = Seq()): Unit = {
     val ch = Console.in.read.toChar
     val nextCart = command(ch, cart)
-    val discounts = implicitly[CompositeOffer] apply nextCart
-    val details = ShoppingCartResult(nextCart.fmap(implicitly[Map[Id, Sku]]), discounts)
+    val details = ShoppingCartPriceCalculator(nextCart)
     details.prettyPrint
     messageUser(RewardCalculator(details))
     messageUser("")
